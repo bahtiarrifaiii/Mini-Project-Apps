@@ -4,9 +4,13 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'widgets/bottom_navbar.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('id_ID', null);
+
   runApp(const CashFlowApp());
 }
 
@@ -107,32 +111,10 @@ class _CashFlowHomeState extends State<CashFlowHome> {
 
     return Scaffold(
       body: IndexedStack(index: _selectedIndex, children: pages),
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: BottomNavbar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: (value) =>
             setState(() => _selectedIndex = value),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.dashboard_rounded),
-            label: 'Dashboard',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.wallet_rounded),
-            label: 'Wallet',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.receipt_long_rounded),
-            label: 'Transaksi',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.savings_rounded),
-            label: 'Anggaran',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.category_rounded),
-            label: 'Kategori',
-          ),
-        ],
       ),
       floatingActionButton: _selectedIndex == 2
           ? FloatingActionButton(
