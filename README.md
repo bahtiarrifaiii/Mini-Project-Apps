@@ -1,17 +1,22 @@
-# mini_proyek_apps
+# CashFlow Mobile
 
-A new Flutter project.
+Aplikasi Flutter MVP untuk pengelolaan keuangan pribadi.
 
-## Getting Started
+## Fitur utama
 
-This project is a starting point for a Flutter application.
+- Dashboard saldo dan grafik bulanan
+- Manajemen wallet
+- Pencatatan transaksi pemasukan dan pengeluaran
+- Anggaran bulanan
+- Riwayat transaksi dengan pencarian
+- Kategori transaksi
+- Penyimpanan data lokal dengan SharedPreferences
 
-A few resources to get you started if this is your first Flutter project:
+## Menjalankan aplikasi
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+1. Jalankan `flutter pub get`
+2. Jalankan `flutter run`
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Testing
+
+- Jalankan `flutter test`
