@@ -1,6 +1,6 @@
 {
-    "name": "mini_proyek_apps",
-    "short_name": "mini_proyek_apps",
+    "name": "CashFlow",
+    "short_name": "CashFlow",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
