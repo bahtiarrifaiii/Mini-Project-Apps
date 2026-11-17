@@ -26,47 +26,54 @@ class WalletScreen extends StatelessWidget {
             ...data.wallets.map(
               (wallet) => Card(
                 color: walletColor(wallet),
+                clipBehavior: Clip.antiAlias,
                 margin: const EdgeInsets.only(bottom: 12),
-                child: ListTile(
-                  leading: const WalletBrandMark(size: 42),
-                  title: Text(
-                    wallet.name,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      color: walletTextColor(wallet),
-                    ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: walletColor(wallet),
+                    image: walletThemeDecorationImage(wallet.themeImageBase64),
                   ),
-                  subtitle: Text(
-                    formatCurrency(data.walletBalance(wallet)),
-                    style: TextStyle(
-                      color: walletTextColor(wallet).withValues(alpha: 0.7),
+                  child: ListTile(
+                    leading: const WalletBrandMark(size: 42),
+                    title: Text(
+                      wallet.name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: walletTextColor(wallet),
+                      ),
                     ),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        tooltip: 'Tambah saldo',
-                        onPressed: () => _addWalletBalance(context, wallet),
-                        icon: Icon(Icons.add, color: walletTextColor(wallet)),
+                    subtitle: Text(
+                      formatCurrency(data.walletBalance(wallet)),
+                      style: TextStyle(
+                        color: walletTextColor(wallet).withValues(alpha: 0.7),
                       ),
-                      IconButton(
-                        tooltip: 'Ubah wallet',
-                        icon: Icon(
-                          Icons.edit_outlined,
-                          color: walletTextColor(wallet),
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          tooltip: 'Tambah saldo',
+                          onPressed: () => _addWalletBalance(context, wallet),
+                          icon: Icon(Icons.add, color: walletTextColor(wallet)),
                         ),
-                        onPressed: () => _showWalletEditor(context, wallet),
-                      ),
-                      IconButton(
-                        tooltip: 'Hapus wallet',
-                        icon: Icon(
-                          Icons.delete_outline,
-                          color: walletTextColor(wallet),
+                        IconButton(
+                          tooltip: 'Ubah wallet',
+                          icon: Icon(
+                            Icons.edit_outlined,
+                            color: walletTextColor(wallet),
+                          ),
+                          onPressed: () => _showWalletEditor(context, wallet),
                         ),
-                        onPressed: () => _confirmDelete(context, wallet),
-                      ),
-                    ],
+                        IconButton(
+                          tooltip: 'Hapus wallet',
+                          icon: Icon(
+                            Icons.delete_outline,
+                            color: walletTextColor(wallet),
+                          ),
+                          onPressed: () => _confirmDelete(context, wallet),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

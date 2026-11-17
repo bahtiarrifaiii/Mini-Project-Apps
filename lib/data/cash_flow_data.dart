@@ -223,7 +223,13 @@ class CashFlowData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateWallet(String id, String newName, {int? themeColor}) {
+  void updateWallet(
+    String id,
+    String newName, {
+    int? themeColor,
+    String? themeImageBase64,
+    bool clearThemeImage = false,
+  }) {
     final index = wallets.indexWhere((w) => w.id == id);
     if (index != -1) {
       wallets[index] = Wallet(
@@ -231,6 +237,9 @@ class CashFlowData extends ChangeNotifier {
         name: newName,
         initialBalance: wallets[index].initialBalance,
         themeColor: themeColor ?? wallets[index].themeColor,
+        themeImageBase64: clearThemeImage
+            ? null
+            : themeImageBase64 ?? wallets[index].themeImageBase64,
       );
       save();
       notifyListeners();

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import '../../models/wallet.dart';
@@ -15,10 +17,27 @@ const walletThemeColors = [
 
 Color walletColor(Wallet wallet) => Color(wallet.themeColor);
 
-Color walletTextColor(Wallet wallet) =>
-    walletColor(wallet).computeLuminance() > 0.45
+Color walletTextColor(Wallet wallet) => wallet.themeImageBase64 != null
+    ? Colors.white
+    : walletColor(wallet).computeLuminance() > 0.45
     ? const Color(0xFF202020)
     : Colors.white;
+
+DecorationImage? walletThemeDecorationImage(String? imageBase64) {
+  if (imageBase64 == null) return null;
+  try {
+    return DecorationImage(
+      image: MemoryImage(base64Decode(imageBase64)),
+      fit: BoxFit.cover,
+      colorFilter: ColorFilter.mode(
+        Colors.black.withValues(alpha: 0.28),
+        BlendMode.darken,
+      ),
+    );
+  } on FormatException {
+    return null;
+  }
+}
 
 class WalletBrandMark extends StatelessWidget {
   final double size;

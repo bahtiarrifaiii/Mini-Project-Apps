@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../core/enums/transaction_type.dart';
 import '../../core/utils/currency_formatter.dart';
@@ -21,6 +25,7 @@ class _WalletEditorSheetState extends State<WalletEditorSheet> {
   late final TextEditingController nameController;
   late final TextEditingController balanceController;
   late int selectedThemeColor;
+  String? selectedThemeImageBase64;
 
   @override
   void initState() {
@@ -28,6 +33,7 @@ class _WalletEditorSheetState extends State<WalletEditorSheet> {
     nameController = TextEditingController(text: widget.wallet?.name ?? '');
     balanceController = TextEditingController(text: '0');
     selectedThemeColor = widget.wallet?.themeColor ?? defaultWalletThemeColor;
+    selectedThemeImageBase64 = widget.wallet?.themeImageBase64;
   }
 
   @override
@@ -92,9 +98,31 @@ class _WalletEditorSheetState extends State<WalletEditorSheet> {
               const SizedBox(height: 8),
               const Center(
                 child: Text(
-                  'Pilih warna dasar kartu wallet',
+                  'Pilih warna atau gunakan gambar dari galeri',
                   style: TextStyle(color: Colors.white54, fontSize: 12),
                 ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: _pickThemeImage,
+                      icon: const Icon(Icons.photo_library_outlined),
+                      label: const Text('Pilih dari Galeri'),
+                    ),
+                  ),
+                  if (selectedThemeImageBase64 != null) ...[
+                    const SizedBox(width: 8),
+                    IconButton(
+                      tooltip: 'Hapus gambar',
+                      onPressed: () => setState(() {
+                        selectedThemeImageBase64 = null;
+                      }),
+                      icon: const Icon(Icons.close_rounded),
+                    ),
+                  ],
+                ],
               ),
               const SizedBox(height: 12),
               GridView.count(
@@ -106,14 +134,18 @@ class _WalletEditorSheetState extends State<WalletEditorSheet> {
                 physics: const NeverScrollableScrollPhysics(),
                 children: walletThemeColors.asMap().entries.map((entry) {
                   final color = entry.value;
-                  final isSelected = color.toARGB32() == selectedThemeColor;
+                  final isSelected =
+                      selectedThemeImageBase64 == null &&
+                      color.toARGB32() == selectedThemeColor;
                   return Semantics(
                     label: 'Pilihan tema ${entry.key + 1}',
                     selected: isSelected,
                     button: true,
                     child: InkWell(
-                      onTap: () =>
-                          setState(() => selectedThemeColor = color.toARGB32()),
+                      onTap: () => setState(() {
+                        selectedThemeColor = color.toARGB32();
+                        selectedThemeImageBase64 = null;
+                      }),
                       borderRadius: BorderRadius.circular(14),
                       child: Container(
                         decoration: BoxDecoration(
@@ -169,7 +201,10 @@ class _WalletEditorSheetState extends State<WalletEditorSheet> {
 
   Widget _buildPreview() {
     final theme = Color(selectedThemeColor);
-    final textColor = theme.computeLuminance() > 0.45
+    final hasImage = selectedThemeImageBase64 != null;
+    final textColor = hasImage
+        ? Colors.white
+        : theme.computeLuminance() > 0.45
         ? const Color(0xFF202020)
         : Colors.white;
     final previewBalance = widget.wallet == null
@@ -182,10 +217,10 @@ class _WalletEditorSheetState extends State<WalletEditorSheet> {
     return AspectRatio(
       aspectRatio: 1.85,
       child: Container(
-        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: theme,
           borderRadius: BorderRadius.circular(22),
+          image: walletThemeDecorationImage(selectedThemeImageBase64),
           border: Border.all(color: Colors.white24),
           boxShadow: [
             BoxShadow(
@@ -195,67 +230,97 @@ class _WalletEditorSheetState extends State<WalletEditorSheet> {
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const WalletBrandMark(size: 42),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    'WALLET',
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const WalletBrandMark(size: 42),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'WALLET',
+                      style: TextStyle(
+                        color: textColor,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  nameController.text.trim().isEmpty
-                      ? 'Nama Wallet'
-                      : nameController.text.trim(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: textColor.withValues(alpha: 0.8),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    nameController.text.trim().isEmpty
+                        ? 'Nama Wallet'
+                        : nameController.text.trim(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: textColor.withValues(alpha: 0.8),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  formatCurrency(previewBalance),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 19,
-                    fontWeight: FontWeight.w800,
+                  const SizedBox(height: 3),
+                  Text(
+                    formatCurrency(previewBalance),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: 19,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  Future<void> _pickThemeImage() async {
+    try {
+      final image = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1400,
+        maxHeight: 1000,
+        imageQuality: 80,
+      );
+      if (image == null) return;
+
+      final bytes = await image.readAsBytes();
+      if (!mounted) return;
+      setState(() {
+        selectedThemeImageBase64 = base64Encode(bytes);
+      });
+    } on PlatformException catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            error.message ?? 'Tidak dapat membuka gambar dari galeri.',
+          ),
+        ),
+      );
+    }
   }
 
   void _saveWallet() {
@@ -273,6 +338,8 @@ class _WalletEditorSheetState extends State<WalletEditorSheet> {
         existingWallet.id,
         name,
         themeColor: selectedThemeColor,
+        themeImageBase64: selectedThemeImageBase64,
+        clearThemeImage: selectedThemeImageBase64 == null,
       );
       Navigator.pop(context);
       return;
@@ -298,6 +365,7 @@ class _WalletEditorSheetState extends State<WalletEditorSheet> {
         name: name,
         initialBalance: 0,
         themeColor: selectedThemeColor,
+        themeImageBase64: selectedThemeImageBase64,
       ),
     );
 

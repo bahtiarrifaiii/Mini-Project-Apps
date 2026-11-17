@@ -22,9 +22,14 @@ void main() {
       name: 'Cash',
       initialBalance: 0,
       themeColor: walletThemeColors[1].toARGB32(),
+      themeImageBase64: 'AQID',
     );
 
     expect(Wallet.fromJson(wallet.toJson()).themeColor, wallet.themeColor);
+    expect(
+      Wallet.fromJson(wallet.toJson()).themeImageBase64,
+      wallet.themeImageBase64,
+    );
     expect(
       Wallet.fromJson({'id': 'legacy', 'name': 'Old wallet'}).themeColor,
       defaultWalletThemeColor,
@@ -58,6 +63,7 @@ void main() {
 
     await tester.tap(find.text('Open wallet editor'));
     await tester.pumpAndSettle();
+    expect(find.text('Pilih dari Galeri'), findsOneWidget);
     await tester.enterText(find.byType(TextField).first, 'Tabungan');
     await tester.ensureVisible(find.bySemanticsLabel('Pilihan tema 2'));
     await tester.tap(find.bySemanticsLabel('Pilihan tema 2'));

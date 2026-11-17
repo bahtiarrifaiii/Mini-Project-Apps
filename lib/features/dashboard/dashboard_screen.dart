@@ -271,6 +271,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                 decoration: BoxDecoration(
                   color: themeColor,
                   borderRadius: BorderRadius.circular(24),
+                  image: walletThemeDecorationImage(wallet.themeImageBase64),
                   border: Border.all(
                     color: isCurrent
                         ? Colors.white
@@ -597,6 +598,9 @@ class _DashboardScreenState extends State<DashboardScreen>
                                 decoration: BoxDecoration(
                                   color: walletColor(wallet),
                                   borderRadius: BorderRadius.circular(18),
+                                  image: walletThemeDecorationImage(
+                                    wallet.themeImageBase64,
+                                  ),
                                   border: Border.all(
                                     color: isSelected
                                         ? Colors.white
