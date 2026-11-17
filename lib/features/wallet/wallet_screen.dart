@@ -6,6 +6,7 @@ import '../../data/cash_flow_data.dart';
 import '../../models/transaction.dart';
 import '../../models/wallet.dart';
 import 'wallet_editor_sheet.dart';
+import 'wallet_theme.dart';
 
 class WalletScreen extends StatelessWidget {
   final CashFlowData data;
@@ -24,33 +25,45 @@ class WalletScreen extends StatelessWidget {
           else
             ...data.wallets.map(
               (wallet) => Card(
+                color: walletColor(wallet),
                 margin: const EdgeInsets.only(bottom: 12),
                 child: ListTile(
-                  leading: const CircleAvatar(
-                    backgroundColor: Color(0xFF2C2C2C),
-                    child: Icon(Icons.wallet_rounded, color: Colors.white),
-                  ),
+                  leading: const WalletBrandMark(size: 42),
                   title: Text(
                     wallet.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                      color: walletTextColor(wallet),
                     ),
                   ),
                   subtitle: Text(
                     formatCurrency(data.walletBalance(wallet)),
-                    style: const TextStyle(color: Colors.white70),
+                    style: TextStyle(
+                      color: walletTextColor(wallet).withValues(alpha: 0.7),
+                    ),
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      TextButton.icon(
+                      IconButton(
+                        tooltip: 'Tambah saldo',
                         onPressed: () => _addWalletBalance(context, wallet),
-                        icon: const Icon(Icons.add, size: 18),
-                        label: const Text('Tambah'),
+                        icon: Icon(Icons.add, color: walletTextColor(wallet)),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline),
+                        tooltip: 'Ubah wallet',
+                        icon: Icon(
+                          Icons.edit_outlined,
+                          color: walletTextColor(wallet),
+                        ),
+                        onPressed: () => _showWalletEditor(context, wallet),
+                      ),
+                      IconButton(
+                        tooltip: 'Hapus wallet',
+                        icon: Icon(
+                          Icons.delete_outline,
+                          color: walletTextColor(wallet),
+                        ),
                         onPressed: () => _confirmDelete(context, wallet),
                       ),
                     ],
@@ -67,16 +80,11 @@ class WalletScreen extends StatelessWidget {
     );
   }
 
-
-  Future<void> _addWalletBalance(
-    BuildContext context,
-    Wallet wallet,
-  ) async {
+  Future<void> _addWalletBalance(BuildContext context, Wallet wallet) async {
     final amount = await showDialog<double>(
       context: context,
-      builder: (dialogContext) => _AddWalletBalanceDialog(
-        walletName: wallet.name,
-      ),
+      builder: (dialogContext) =>
+          _AddWalletBalanceDialog(walletName: wallet.name),
     );
 
     if (!context.mounted || amount == null) return;
@@ -84,9 +92,7 @@ class WalletScreen extends StatelessWidget {
     final incomeCategories = data.categoriesByType(TransactionType.income);
     if (incomeCategories.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Kategori pemasukan belum tersedia.'),
-        ),
+        const SnackBar(content: Text('Kategori pemasukan belum tersedia.')),
       );
       return;
     }
@@ -128,15 +134,14 @@ class WalletScreen extends StatelessWidget {
     }
   }
 
-  Future<void> _showWalletEditor(BuildContext context) async {
+  Future<void> _showWalletEditor(BuildContext context, [Wallet? wallet]) async {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (_) => WalletEditorSheet(data: data),
+      builder: (_) => WalletEditorSheet(data: data, wallet: wallet),
     );
   }
 }
-
 
 class _AddWalletBalanceDialog extends StatefulWidget {
   final String walletName;
@@ -191,10 +196,7 @@ class _AddWalletBalanceDialogState extends State<_AddWalletBalanceDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Batal'),
         ),
-        FilledButton(
-          onPressed: _submit,
-          child: const Text('Simpan'),
-        ),
+        FilledButton(onPressed: _submit, child: const Text('Simpan')),
       ],
     );
   }

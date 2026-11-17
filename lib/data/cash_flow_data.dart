@@ -223,13 +223,14 @@ class CashFlowData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateWallet(String id, String newName) {
+  void updateWallet(String id, String newName, {int? themeColor}) {
     final index = wallets.indexWhere((w) => w.id == id);
     if (index != -1) {
       wallets[index] = Wallet(
         id: id,
         name: newName,
         initialBalance: wallets[index].initialBalance,
+        themeColor: themeColor ?? wallets[index].themeColor,
       );
       save();
       notifyListeners();
@@ -254,7 +255,6 @@ class CashFlowData extends ChangeNotifier {
     save();
     notifyListeners();
   }
-
 
   DateTime earliestTransactionMonth() {
     if (transactions.isEmpty) {
@@ -319,5 +319,4 @@ class CashFlowData extends ChangeNotifier {
       return '$startDay–$endDay';
     });
   }
-
 }

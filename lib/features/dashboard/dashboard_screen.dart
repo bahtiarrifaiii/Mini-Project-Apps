@@ -10,6 +10,7 @@ import '../../core/utils/date_formatter.dart';
 import '../../data/cash_flow_data.dart';
 import '../../models/wallet.dart';
 import '../wallet/wallet_editor_sheet.dart';
+import '../wallet/wallet_theme.dart';
 
 class DashboardScreen extends StatefulWidget {
   final CashFlowData data;
@@ -257,6 +258,8 @@ class _DashboardScreenState extends State<DashboardScreen>
               final wallet = data.wallets[index];
               final balance = data.walletBalance(wallet);
               final isCurrent = index == _activeWalletIndex;
+              final themeColor = walletColor(wallet);
+              final textColor = walletTextColor(wallet);
 
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 250),
@@ -266,12 +269,12 @@ class _DashboardScreenState extends State<DashboardScreen>
                 ),
                 padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E1E1E),
+                  color: themeColor,
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
                     color: isCurrent
-                        ? const Color(0xFFDE749B)
-                        : const Color(0xFF404040),
+                        ? Colors.white
+                        : Colors.white.withValues(alpha: 0.35),
                     width: isCurrent ? 1.5 : 1,
                   ),
                   boxShadow: [
@@ -286,44 +289,27 @@ class _DashboardScreenState extends State<DashboardScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Baris Atas: Badge Nama Wallet & Ikon Edit / Eye
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.08),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: const Color(0xFF404040)),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.account_balance_wallet_rounded,
-                                color: Colors.blueAccent,
-                                size: 15,
-                              ),
-                              const SizedBox(width: 6),
-                              ConstrainedBox(
-                                constraints: const BoxConstraints(maxWidth: 130),
-                                child: Text(
-                                  wallet.name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                        Row(
+                          children: [
+                            const WalletBrandMark(size: 34),
+                            const SizedBox(width: 8),
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 105),
+                              child: Text(
+                                wallet.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: textColor,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                         Row(
                           children: [
@@ -331,10 +317,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                               visualDensity: VisualDensity.compact,
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.edit_outlined,
                                 size: 18,
-                                color: Colors.white70,
+                                color: textColor,
                               ),
                               onPressed: () => _editWalletName(context, wallet),
                             ),
@@ -348,7 +334,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                                     ? Icons.visibility_off_rounded
                                     : Icons.visibility_rounded,
                                 size: 18,
-                                color: Colors.white70,
+                                color: textColor,
                               ),
                               onPressed: () =>
                                   setState(() => _hideBalance = !_hideBalance),
@@ -358,15 +344,14 @@ class _DashboardScreenState extends State<DashboardScreen>
                       ],
                     ),
 
-                    // Tengah: Saldo Wallet
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: Text(
                         _hideBalance ? 'Rp ******' : formatCurrency(balance),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: textColor,
                           fontSize: 27,
                           fontWeight: FontWeight.w800,
                           letterSpacing: -0.6,
@@ -374,7 +359,6 @@ class _DashboardScreenState extends State<DashboardScreen>
                       ),
                     ),
 
-                    // Bawah: Tombol "See Detail >>"
                     InkWell(
                       onTap: () => _showWalletDetailSheet(context, wallet),
                       borderRadius: BorderRadius.circular(20),
@@ -384,17 +368,16 @@ class _DashboardScreenState extends State<DashboardScreen>
                           vertical: 7,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.06),
+                          color: Colors.black.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: const Color(0xFF404040)),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
                               'See Detail >>',
                               style: TextStyle(
-                                color: Colors.white70,
+                                color: textColor.withValues(alpha: 0.78),
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -596,6 +579,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                             final wallet = data.wallets[index];
                             final isSelected = index == _activeWalletIndex;
                             final balance = data.walletBalance(wallet);
+                            final textColor = walletTextColor(wallet);
 
                             return InkWell(
                               onTap: () {
@@ -611,12 +595,12 @@ class _DashboardScreenState extends State<DashboardScreen>
                               child: Container(
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF1E1E1E),
+                                  color: walletColor(wallet),
                                   borderRadius: BorderRadius.circular(18),
                                   border: Border.all(
                                     color: isSelected
-                                        ? const Color(0xFFDE749B)
-                                        : const Color(0xFF404040),
+                                        ? Colors.white
+                                        : Colors.white.withValues(alpha: 0.35),
                                     width: isSelected ? 2 : 1,
                                   ),
                                 ),
@@ -629,24 +613,11 @@ class _DashboardScreenState extends State<DashboardScreen>
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Container(
-                                          width: 34,
-                                          height: 34,
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFFE5A93C)
-                                                .withValues(alpha: 0.2),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: const Icon(
-                                            Icons.wallet_rounded,
-                                            color: Color(0xFFE5A93C),
-                                            size: 18,
-                                          ),
-                                        ),
+                                        const WalletBrandMark(size: 34),
                                         if (isSelected)
-                                          const Icon(
+                                          Icon(
                                             Icons.check_circle_rounded,
-                                            color: Color(0xFFDE749B),
+                                            color: textColor,
                                             size: 20,
                                           ),
                                       ],
@@ -659,8 +630,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                                           wallet.name,
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            color: Colors.white,
+                                          style: TextStyle(
+                                            color: textColor,
                                             fontWeight: FontWeight.w700,
                                             fontSize: 13,
                                           ),
@@ -670,8 +641,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                                           formatCurrency(balance),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            color: Colors.white70,
+                                          style: TextStyle(
+                                            color: textColor.withValues(
+                                              alpha: 0.7,
+                                            ),
                                             fontSize: 12,
                                             fontWeight: FontWeight.w600,
                                           ),
@@ -685,10 +658,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                                           visualDensity: VisualDensity.compact,
                                           padding: EdgeInsets.zero,
                                           constraints: const BoxConstraints(),
-                                          icon: const Icon(
+                                          icon: Icon(
                                             Icons.edit_outlined,
                                             size: 16,
-                                            color: Colors.white60,
+                                            color: textColor,
                                           ),
                                           onPressed: () async {
                                             await _editWalletName(
@@ -701,10 +674,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                                           visualDensity: VisualDensity.compact,
                                           padding: EdgeInsets.zero,
                                           constraints: const BoxConstraints(),
-                                          icon: const Icon(
+                                          icon: Icon(
                                             Icons.delete_outline,
                                             size: 16,
-                                            color: Colors.redAccent,
+                                            color: textColor,
                                           ),
                                           onPressed: () async {
                                             await _confirmDeleteWallet(
@@ -872,37 +845,12 @@ class _DashboardScreenState extends State<DashboardScreen>
   }
 
   Future<void> _editWalletName(BuildContext context, Wallet wallet) async {
-    final controller = TextEditingController(text: wallet.name);
-    final newName = await showDialog<String>(
+    await showModalBottomSheet(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text(
-          'Ubah Nama Wallet',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(labelText: 'Nama Wallet'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Batal'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: const Text('Simpan'),
-          ),
-        ],
-      ),
+      isScrollControlled: true,
+      builder: (_) => WalletEditorSheet(data: data, wallet: wallet),
     );
-
-    if (newName != null && newName.isNotEmpty) {
-      data.updateWallet(wallet.id, newName);
-      if (mounted) setState(() {});
-    }
+    if (mounted) setState(() {});
   }
 
   Future<void> _confirmDeleteWallet(BuildContext context, Wallet wallet) async {
