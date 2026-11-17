@@ -94,11 +94,13 @@ class _TransactionEditorSheetState extends State<TransactionEditorSheet> {
               const SizedBox(height: 12),
               InkWell(
                 onTap: () async {
+                  final today = DateUtils.dateOnly(DateTime.now());
                   final date = await showDatePicker(
                     context: context,
-                    initialDate: DateTime.now(),
+                    initialDate: today,
                     firstDate: DateTime(2020),
-                    lastDate: DateTime(2100),
+                    lastDate: today,
+                    helpText: 'Pilih tanggal transaksi',
                   );
                   if (date != null) {
                     setState(() => _date = date);
