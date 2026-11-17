@@ -1,8 +1,6 @@
 import 'dart:convert';
 
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/enums/transaction_type.dart';
@@ -225,6 +223,19 @@ class CashFlowData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateWallet(String id, String newName) {
+    final index = wallets.indexWhere((w) => w.id == id);
+    if (index != -1) {
+      wallets[index] = Wallet(
+        id: id,
+        name: newName,
+        initialBalance: wallets[index].initialBalance,
+      );
+      save();
+      notifyListeners();
+    }
+  }
+
   void deleteWallet(String id) {
     wallets.removeWhere((wallet) => wallet.id == id);
     transactions.removeWhere((transaction) => transaction.walletId == id);
@@ -284,7 +295,6 @@ class CashFlowData extends ChangeNotifier {
   }
 
   List<double> weeklyChartTotals(DateTime month, TransactionType type) {
-    final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
     final totals = <double>[0, 0, 0, 0];
 
     for (final item in transactions) {

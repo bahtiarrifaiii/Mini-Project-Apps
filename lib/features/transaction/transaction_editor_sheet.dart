@@ -53,7 +53,11 @@ class _TransactionEditorSheetState extends State<TransactionEditorSheet> {
             children: [
               const Text(
                 'Tambah Transaksi',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
               ),
               const SizedBox(height: 12),
               SegmentedButton<TransactionType>(
@@ -81,6 +85,7 @@ class _TransactionEditorSheetState extends State<TransactionEditorSheet> {
               const SizedBox(height: 12),
               TextField(
                 controller: _amountController,
+                style: const TextStyle(color: Colors.white),
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
@@ -101,13 +106,18 @@ class _TransactionEditorSheetState extends State<TransactionEditorSheet> {
                 },
                 child: InputDecorator(
                   decoration: const InputDecoration(labelText: 'Tanggal'),
-                  child: Text(formatDate(_date)),
+                  child: Text(
+                    formatDate(_date),
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 initialValue: _walletId.isEmpty ? null : _walletId,
                 isExpanded: true,
+                dropdownColor: const Color(0xFF1E1E1E),
+                style: const TextStyle(color: Colors.white),
                 items: widget.data.wallets
                     .map(
                       (wallet) => DropdownMenuItem(
@@ -123,6 +133,8 @@ class _TransactionEditorSheetState extends State<TransactionEditorSheet> {
               DropdownButtonFormField<String>(
                 initialValue: _categoryId.isEmpty ? null : _categoryId,
                 isExpanded: true,
+                dropdownColor: const Color(0xFF1E1E1E),
+                style: const TextStyle(color: Colors.white),
                 items: categories
                     .map(
                       (category) => DropdownMenuItem(
@@ -137,6 +149,7 @@ class _TransactionEditorSheetState extends State<TransactionEditorSheet> {
               const SizedBox(height: 12),
               TextField(
                 controller: _descriptionController,
+                style: const TextStyle(color: Colors.white),
                 decoration: const InputDecoration(labelText: 'Deskripsi'),
               ),
               const SizedBox(height: 20),

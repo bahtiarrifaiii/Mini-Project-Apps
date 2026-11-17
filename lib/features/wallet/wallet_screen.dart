@@ -27,10 +27,20 @@ class WalletScreen extends StatelessWidget {
                 margin: const EdgeInsets.only(bottom: 12),
                 child: ListTile(
                   leading: const CircleAvatar(
-                    child: Icon(Icons.wallet_rounded),
+                    backgroundColor: Color(0xFF2C2C2C),
+                    child: Icon(Icons.wallet_rounded, color: Colors.white),
                   ),
-                  title: Text(wallet.name),
-                  subtitle: Text(formatCurrency(data.walletBalance(wallet))),
+                  title: Text(
+                    wallet.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                  subtitle: Text(
+                    formatCurrency(data.walletBalance(wallet)),
+                    style: const TextStyle(color: Colors.white70),
+                  ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

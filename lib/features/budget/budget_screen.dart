@@ -39,6 +39,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
+                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -49,18 +50,23 @@ class _BudgetScreenState extends State<BudgetScreen> {
                       style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.w800,
+                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 16),
                     LinearProgressIndicator(
                       value: ratio,
                       minHeight: 12,
+                      backgroundColor: const Color(0xFF404040),
                       borderRadius: BorderRadius.circular(100),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       'Terpakai: ${formatCurrency(spent)}',
-                      style: const TextStyle(fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white70,
+                      ),
                     ),
                   ],
                 ),
@@ -69,6 +75,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
             const SizedBox(height: 22),
             TextField(
               controller: controller,
+              style: const TextStyle(color: Colors.white),
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),

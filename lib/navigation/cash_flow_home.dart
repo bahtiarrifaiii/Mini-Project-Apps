@@ -37,6 +37,7 @@ class _CashFlowHomeState extends State<CashFlowHome> {
         selectedIndex: _selectedIndex,
         onDestinationSelected: (value) =>
             setState(() => _selectedIndex = value),
+        onAddPressed: () => _openTransactionEditor(context),
       ),
       floatingActionButton: _selectedIndex == 2
           ? FloatingActionButton(

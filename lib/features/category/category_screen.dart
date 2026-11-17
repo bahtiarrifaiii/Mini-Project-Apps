@@ -47,14 +47,23 @@ class _CategorySection extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
             ),
             const SizedBox(height: 10),
             ...categories.map(
               (category) => Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(child: Text(category.name)),
+                  Expanded(
+                    child: Text(
+                      category.name,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
                   if (!category.isDefault)
                     IconButton(
                       icon: const Icon(Icons.delete_outline),

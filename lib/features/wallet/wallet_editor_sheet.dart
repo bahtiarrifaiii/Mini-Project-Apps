@@ -34,16 +34,22 @@ class _WalletEditorSheetState extends State<WalletEditorSheet> {
           children: [
             const Text(
               'Tambah Wallet',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: nameController,
+              style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(labelText: 'Nama wallet'),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: balanceController,
+              style: const TextStyle(color: Colors.white),
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),

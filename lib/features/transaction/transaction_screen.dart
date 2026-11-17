@@ -30,10 +30,10 @@ class _TransactionScreenState extends State<TransactionScreen> {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: TextField(
               onChanged: (value) => setState(() => _query = value),
+              style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: Icon(Icons.search, color: Colors.white70),
                 hintText: 'Cari transaksi',
-                border: OutlineInputBorder(),
               ),
             ),
           ),
@@ -41,7 +41,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
             child: ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: transactions.length,
-              separatorBuilder: (_, _) => const Divider(),
+              separatorBuilder: (_, _) => const Divider(color: Color(0xFF404040)),
               itemBuilder: (_, index) {
                 final transaction = transactions[index];
                 final wallet = widget.data.findWallet(transaction.walletId);
@@ -52,7 +52,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                 return ListTile(
                   leading: CircleAvatar(
                     backgroundColor: transaction.type.color.withValues(
-                      alpha: 0.12,
+                      alpha: 0.15,
                     ),
                     child: Icon(
                       transaction.type.icon,
@@ -63,9 +63,14 @@ class _TransactionScreenState extends State<TransactionScreen> {
                     transaction.description.isEmpty
                         ? category?.name ?? 'Transaksi'
                         : transaction.description,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   subtitle: Text(
                     '${wallet?.name ?? '-'} • ${formatDate(transaction.date)}',
+                    style: const TextStyle(color: Colors.white70),
                   ),
                   trailing: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,

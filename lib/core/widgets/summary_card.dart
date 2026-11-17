@@ -33,14 +33,14 @@ class _SummaryCardState extends State<SummaryCard> {
     return SizedBox(
       width: 160,
       child: Card(
-        color: widget.color.withValues(alpha: 0.085),
+        color: const Color(0xFF1E1E1E),
         elevation: 0,
         margin: EdgeInsets.zero,
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(
-            color: widget.color.withValues(alpha: 0.16),
+          side: const BorderSide(
+            color: Color(0xFF404040),
           ),
         ),
         child: Padding(
@@ -87,7 +87,7 @@ class _SummaryCardState extends State<SummaryCard> {
               Text(
                 widget.title,
                 style: const TextStyle(
-                  color: Color(0xFF687080),
+                  color: Colors.white70,
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
@@ -98,7 +98,7 @@ class _SummaryCardState extends State<SummaryCard> {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  color: Color(0xFF202633),
+                  color: Colors.white,
                   fontWeight: FontWeight.w800,
                   fontSize: 17,
                   letterSpacing: -0.25,
