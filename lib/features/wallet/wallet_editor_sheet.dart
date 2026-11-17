@@ -5,11 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../core/enums/transaction_type.dart';
-import '../../core/utils/currency_formatter.dart';
 import '../../data/cash_flow_data.dart';
 import '../../models/transaction.dart';
 import '../../models/wallet.dart';
-import 'wallet_theme.dart';
+import 'widgets/wallet_card_preview.dart';
+import 'widgets/wallet_color_picker.dart';
+import 'widgets/wallet_image_picker_action.dart';
 
 class WalletEditorSheet extends StatefulWidget {
   final CashFlowData data;
@@ -45,6 +46,13 @@ class _WalletEditorSheetState extends State<WalletEditorSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final previewBalance = widget.wallet == null
+        ? (double.tryParse(
+                balanceController.text.trim().replaceAll(',', '.'),
+              ) ??
+              0)
+        : widget.data.walletBalance(widget.wallet!);
+
     return Padding(
       padding: EdgeInsets.only(
         left: 16,
@@ -94,79 +102,27 @@ class _WalletEditorSheetState extends State<WalletEditorSheet> {
                 ),
               ),
               const SizedBox(height: 10),
-              _buildPreview(),
-              const SizedBox(height: 8),
-              const Center(
-                child: Text(
-                  'Pilih warna atau gunakan gambar dari galeri',
-                  style: TextStyle(color: Colors.white54, fontSize: 12),
-                ),
+              WalletCardPreview(
+                themeColor: selectedThemeColor,
+                themeImageBase64: selectedThemeImageBase64,
+                walletName: nameController.text,
+                balance: previewBalance,
               ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: _pickThemeImage,
-                      icon: const Icon(Icons.photo_library_outlined),
-                      label: const Text('Pilih dari Galeri'),
-                    ),
-                  ),
-                  if (selectedThemeImageBase64 != null) ...[
-                    const SizedBox(width: 8),
-                    IconButton(
-                      tooltip: 'Hapus gambar',
-                      onPressed: () => setState(() {
-                        selectedThemeImageBase64 = null;
-                      }),
-                      icon: const Icon(Icons.close_rounded),
-                    ),
-                  ],
-                ],
+              WalletImagePickerAction(
+                hasImage: selectedThemeImageBase64 != null,
+                onPickImage: _pickThemeImage,
+                onRemoveImage: () => setState(() {
+                  selectedThemeImageBase64 = null;
+                }),
               ),
               const SizedBox(height: 12),
-              GridView.count(
-                crossAxisCount: 5,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 1.15,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                children: walletThemeColors.asMap().entries.map((entry) {
-                  final color = entry.value;
-                  final isSelected =
-                      selectedThemeImageBase64 == null &&
-                      color.toARGB32() == selectedThemeColor;
-                  return Semantics(
-                    label: 'Pilihan tema ${entry.key + 1}',
-                    selected: isSelected,
-                    button: true,
-                    child: InkWell(
-                      onTap: () => setState(() {
-                        selectedThemeColor = color.toARGB32();
-                        selectedThemeImageBase64 = null;
-                      }),
-                      borderRadius: BorderRadius.circular(14),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: color,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: isSelected ? Colors.white : Colors.white24,
-                            width: isSelected ? 3 : 1,
-                          ),
-                        ),
-                        child: isSelected
-                            ? const Icon(
-                                Icons.check_rounded,
-                                color: Color(0xFF202020),
-                                size: 23,
-                              )
-                            : null,
-                      ),
-                    ),
-                  );
-                }).toList(),
+              WalletColorPicker(
+                selectedThemeColor: selectedThemeColor,
+                isCustomImageActive: selectedThemeImageBase64 != null,
+                onColorSelected: (color) => setState(() {
+                  selectedThemeColor = color;
+                  selectedThemeImageBase64 = null;
+                }),
               ),
               if (widget.wallet == null) ...[
                 const SizedBox(height: 18),
@@ -191,103 +147,6 @@ class _WalletEditorSheetState extends State<WalletEditorSheet> {
                     widget.wallet == null ? 'Simpan' : 'Simpan Perubahan',
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPreview() {
-    final theme = Color(selectedThemeColor);
-    final hasImage = selectedThemeImageBase64 != null;
-    final textColor = hasImage
-        ? Colors.white
-        : theme.computeLuminance() > 0.45
-        ? const Color(0xFF202020)
-        : Colors.white;
-    final previewBalance = widget.wallet == null
-        ? (double.tryParse(
-                balanceController.text.trim().replaceAll(',', '.'),
-              ) ??
-              0)
-        : widget.data.walletBalance(widget.wallet!);
-
-    return AspectRatio(
-      aspectRatio: 1.85,
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme,
-          borderRadius: BorderRadius.circular(22),
-          image: walletThemeDecorationImage(selectedThemeImageBase64),
-          border: Border.all(color: Colors.white24),
-          boxShadow: [
-            BoxShadow(
-              color: theme.withValues(alpha: 0.18),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const WalletBrandMark(size: 42),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      'WALLET',
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    nameController.text.trim().isEmpty
-                        ? 'Nama Wallet'
-                        : nameController.text.trim(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: textColor.withValues(alpha: 0.8),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    formatCurrency(previewBalance),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: 19,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
               ),
             ],
           ),

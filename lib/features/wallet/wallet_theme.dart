@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
@@ -17,17 +18,27 @@ const walletThemeColors = [
 
 Color walletColor(Wallet wallet) => Color(wallet.themeColor);
 
+Color walletBackgroundColor(Wallet wallet) => wallet.themeImageBase64 != null
+    ? const Color(0xFF1E1E1E)
+    : walletColor(wallet);
+
 Color walletTextColor(Wallet wallet) => wallet.themeImageBase64 != null
     ? Colors.white
     : walletColor(wallet).computeLuminance() > 0.45
     ? const Color(0xFF202020)
     : Colors.white;
 
+final Map<String, Uint8List> _walletImageBytesCache = {};
+
 DecorationImage? walletThemeDecorationImage(String? imageBase64) {
-  if (imageBase64 == null) return null;
+  if (imageBase64 == null || imageBase64.isEmpty) return null;
   try {
+    final bytes = _walletImageBytesCache.putIfAbsent(
+      imageBase64,
+      () => base64Decode(imageBase64),
+    );
     return DecorationImage(
-      image: MemoryImage(base64Decode(imageBase64)),
+      image: MemoryImage(bytes),
       fit: BoxFit.cover,
       colorFilter: ColorFilter.mode(
         Colors.black.withValues(alpha: 0.28),

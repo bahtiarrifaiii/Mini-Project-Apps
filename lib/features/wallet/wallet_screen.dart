@@ -25,12 +25,12 @@ class WalletScreen extends StatelessWidget {
           else
             ...data.wallets.map(
               (wallet) => Card(
-                color: walletColor(wallet),
+                color: walletBackgroundColor(wallet),
                 clipBehavior: Clip.antiAlias,
                 margin: const EdgeInsets.only(bottom: 12),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: walletColor(wallet),
+                    color: walletBackgroundColor(wallet),
                     image: walletThemeDecorationImage(wallet.themeImageBase64),
                   ),
                   child: ListTile(
